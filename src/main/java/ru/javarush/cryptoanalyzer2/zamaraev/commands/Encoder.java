@@ -20,7 +20,9 @@ public class Encoder implements Action{
         Path pathIn = Path.of(PathFinder.getRoot() + txtFile);
         Path pathOut = Path.of(PathFinder.getRoot() + encryptedFile);
         try {
-            Files.createFile(pathOut);
+            if(!Files.exists(pathOut)){
+                Files.createFile(pathOut);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,7 +47,7 @@ public class Encoder implements Action{
             throw new RuntimeException(e);
         }
 
-        return new Result(ResultCode.OK,"read all bytes " + pathIn);
+        return new Result(ResultCode.OK,"Encode file " + pathIn);
     }
     private static String encoderText(String text1, int key) {
         ArrayList<String> list = new ArrayList<>(Arrays.asList(text1.split("")));
@@ -58,7 +60,7 @@ public class Encoder implements Action{
     }
     private static String characterEncoder(String a, int key) {
         for (int i = 0; i < Strings.alphabet.length; i++) {
-            if(Strings.alphabet[i].equals(a)){
+            if(Strings.alphabet[i].equals(a.toLowerCase())){
                 if(i + key <= Strings.alphabet.length - 1){
                     return Strings.alphabet[i + key];
                 }else {

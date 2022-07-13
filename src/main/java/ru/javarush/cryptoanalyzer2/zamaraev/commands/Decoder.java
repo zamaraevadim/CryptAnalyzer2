@@ -21,7 +21,9 @@ public class Decoder implements Action{
         Path pathIn = Path.of(PathFinder.getRoot() + encrypted);
         Path pathOut = Path.of(PathFinder.getRoot() + decryptedFile);
         try {
-            Files.createFile(pathOut);
+            if(!Files.exists(pathOut)){
+                Files.createFile(pathOut);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -59,7 +61,7 @@ public class Decoder implements Action{
     }
     private static String characterDecoder(String s, int key) {
         for (int i = 0; i < Strings.alphabet.length; i++) {
-            if(Strings.alphabet[i].equals(s)){
+            if(Strings.alphabet[i].equals(s.toLowerCase())){
                 if(i - key >= 0){
                     return Strings.alphabet[i - key];
                 }else {
