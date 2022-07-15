@@ -33,116 +33,79 @@ public class StaticAnalysis implements Action {
             FileReader readerDict = new FileReader(String.valueOf(dictPath));
             FileWriter writer = new FileWriter(String.valueOf(pathOut))) {
 
-            Map<String, Double> mapOfDict = new HashMap<>();
-
-            TreeMap<Double, String> treeMap = new TreeMap<>();
-
-            Map<String, Double> mapOfEncrypt = new HashMap<>();
-
-            TreeMap<Double, String> treeMapEncrypt = new TreeMap<>();
-
-            for(String str: Strings.alphabet){
-                mapOfEncrypt.put(str,0.0);
-            }
-
-            for(String str: Strings.alphabet){
-                mapOfDict.put(str,0.0);
-            }
-
-            StringBuilder dictText = new StringBuilder();
-
-            while (readerDict.ready()){
-                dictText.append((char) readerDict.read());
-            }
-
             StringBuilder encryptText = new StringBuilder();
-
             while (readerEncrypt.ready()){
-                encryptText.append((char) readerEncrypt.read());
+                encryptText.append(String.valueOf((char) readerEncrypt.read()).toLowerCase());
             }
 
-            String[] dictTextArray = dictText.toString().split("");
+            char[] arrayOfEncryptedTextCharacters = encryptText.toString().toCharArray();
 
-            for (String str : dictTextArray){
-                if(mapOfDict.containsKey(str.toLowerCase())){
-                    mapOfDict.put(str.toLowerCase(),mapOfDict.get(str.toLowerCase()) + 1.0);
-                }
-            }
+            Map<Character,Integer> mapCharactersCountEncrypt = new HashMap<>();
 
-            String[] encryptTextArray = encryptText.toString().split("");
-
-            for (String str : encryptTextArray){
-                if(mapOfEncrypt.containsKey(str.toLowerCase())){
-                    mapOfEncrypt.put(str.toLowerCase(),mapOfEncrypt.get(str.toLowerCase()) + 1.0);
-                }
-            }
-
-
-            for (Map.Entry<String, Double> entry : mapOfDict.entrySet()) {
-                String k = entry.getKey();
-
-                if(treeMap.containsKey(mapOfDict.get(k))){
-                    treeMap.put((mapOfDict.get(k) + Math.random() ) / dictTextArray.length * 100000, k);
+            for(char c : arrayOfEncryptedTextCharacters){
+                if(mapCharactersCountEncrypt.containsKey(c)){
+                    mapCharactersCountEncrypt.put(c,mapCharactersCountEncrypt.get(c) + 1);
                 }else{
-                    treeMap.put((mapOfDict.get(k) + Math.random() ) / encryptTextArray.length * 100000, k);
+                    mapCharactersCountEncrypt.put(c,1);
                 }
-
             }
-            int countMap = 1;
-            for(var c : treeMap.entrySet()){
-                System.out.println(c + "  " + countMap);
-                countMap++;
+            //----------------------------------------------------------------------------------------------------
+            StringBuilder dictText = new StringBuilder();
+            while (readerDict.ready()){
+                dictText.append(String.valueOf((char) readerDict.read()).toLowerCase());
             }
-            for (Map.Entry<String, Double> entry : mapOfEncrypt.entrySet()) {
-                String key = entry.getKey();
-                if(treeMapEncrypt.containsKey(mapOfEncrypt.get(key))){
-                    treeMapEncrypt.put((mapOfEncrypt.get(key) + Math.random() ) / encryptTextArray.length * 100000, key);
 
+            char[] arrayOfDictTextCharacters = dictText.toString().toCharArray();
+
+            Map<Character,Integer> mapCharactersCountDict = new HashMap<>();
+
+            for(char c : arrayOfDictTextCharacters){
+                if(mapCharactersCountDict.containsKey(c)){
+                    mapCharactersCountDict.put(c,mapCharactersCountDict.get(c) + 1);
                 }else{
-                    treeMapEncrypt.put((mapOfEncrypt.get(key) + Math.random() ) / encryptTextArray.length * 100000, key);
+                    mapCharactersCountDict.put(c,1);
                 }
-
             }
+            //----------------------------------------------------------------------------------------------------
+            TreeMap<Double,Character> treeMapDictCharacters = new TreeMap<>();
+            for (Map.Entry<Character,Integer> pairMapDict : mapCharactersCountDict.entrySet()){
+                double key = pairMapDict.getValue() * 1.0 / arrayOfDictTextCharacters.length * 100;
 
-
-            Map<String,String> finalMap = new HashMap<>();
-            for(var s : treeMapEncrypt.entrySet()){
-                if(s.getKey() >= treeMap.lastKey()){
-                    finalMap.put(s.getValue(),treeMap.get(treeMap.lastKey()));
+                if(treeMapDictCharacters.containsKey(key)){
+                    treeMapDictCharacters.put(key + Math.random() / 10 ,pairMapDict.getKey());
                 }else{
-                    finalMap.put(s.getValue(),treeMap.get(treeMap.floorKey(s.getKey())));
+                    treeMapDictCharacters.put(key,pairMapDict.getKey());
                 }
             }
-//            for(var d : mapOfDict.entrySet()){
-//                System.out.print(d + " ");
+            //----------------------------------------------------------------------------------------------------
+
+            TreeMap<Double,Character> treeMapEncryptCharacters = new TreeMap<>();
+            for (Map.Entry<Character,Integer> pairMapEncrypt : mapCharactersCountEncrypt.entrySet()){
+                double key = pairMapEncrypt.getValue() * 1.0 / arrayOfEncryptedTextCharacters.length * 100;
+
+                if(treeMapEncryptCharacters.containsKey(key)){
+                    treeMapEncryptCharacters.put(key + Math.random() / 10 ,pairMapEncrypt.getKey());
+                }else{
+                    treeMapEncryptCharacters.put(key,pairMapEncrypt.getKey());
+                }
+            }
+           // if(treeMapEncryptCharacters.containsKey(null))treeMapEncryptCharacters.remove(null);
+
+
+            Map<Character,Character> finalMap = new HashMap<>();
+            System.out.println();
+            for(var c : treeMapDictCharacters.entrySet()) System.out.print(c + " |");
+            System.out.println();
+            System.out.println("--------------------------------------------------------------" +
+                    "-------------------------------------------------");
+            System.out.println();
+            for(var c : treeMapEncryptCharacters.entrySet()) System.out.print(c + " |");
+
+//            for(var letter : arrayOfEncryptedTextCharacters){
+//                writer.append(finalMap.get(letter));
+//
 //            }
-            System.out.println("Из словаря");
-            int countTreemap = 0;
-            for(var d : treeMap.entrySet()){
-                System.out.print(d + " |");
-                countTreemap++;
-            }
-            System.out.println();
-            System.out.println("Зашифрованный");
-            for(var d : treeMapEncrypt.entrySet()){
-                System.out.print(d + " |");
-            }
-            System.out.println();
-            System.out.println("-----------------------------------------------------------------");
-            int count = 0;
-            for(var d : finalMap.entrySet()){
-                System.out.print(d + " |");
-                count++;
-            }
 
-            for(var letter : encryptTextArray){
-                writer.append(finalMap.get(letter));
-
-            }
-            System.out.println();
-            System.out.println("Из словаря " + countTreemap);
-            System.out.println(Strings.alphabet.length + "!!!!!");
-            System.out.println(count);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
