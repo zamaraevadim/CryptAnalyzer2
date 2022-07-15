@@ -2,6 +2,7 @@ package ru.javarush.cryptoanalyzer2.zamaraev.commands;
 
 import ru.javarush.cryptoanalyzer2.zamaraev.constans.Strings;
 import ru.javarush.cryptoanalyzer2.zamaraev.entity.Result;
+import ru.javarush.cryptoanalyzer2.zamaraev.entity.ResultCode;
 import ru.javarush.cryptoanalyzer2.zamaraev.util.PathFinder;
 
 import java.io.FileReader;
@@ -48,7 +49,9 @@ public class Decoder implements Action{
             throw new RuntimeException(e);
         }
 
-        return null;
+        return new Result(ResultCode.OK,"The file " + pathIn.getFileName() +
+                " was decrypted using decoder " +
+                ", the decrypted text is in the file " + pathOut.getFileName());
     }
     private static String decoderText(String text2,int key) {
         ArrayList<String> list1 = new ArrayList<>(Arrays.asList(text2.split("")));
@@ -69,6 +72,6 @@ public class Decoder implements Action{
                 }
             }
         }
-        return "";
+        return null;
     }
 }

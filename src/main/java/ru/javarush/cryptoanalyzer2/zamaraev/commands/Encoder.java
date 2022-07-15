@@ -47,7 +47,9 @@ public class Encoder implements Action{
             throw new RuntimeException(e);
         }
 
-        return new Result(ResultCode.OK,"Encode file " + pathIn);
+        return new Result(ResultCode.OK,"The file " + pathIn.getFileName() +
+                " was encrypted using encoder " +
+                ", the encrypted text is in the file " + pathOut.getFileName());
     }
     private static String encoderText(String text1, int key) {
         ArrayList<String> list = new ArrayList<>(Arrays.asList(text1.split("")));
@@ -68,6 +70,6 @@ public class Encoder implements Action{
                 }
             }
         }
-        return "";
+        return null;
     }
 }

@@ -19,6 +19,7 @@ public class BruteForce implements Action {
         String brutForcedFile = parameters[1];
         Path pathIn = Path.of(PathFinder.getRoot() + encrypted);
         Path pathOut = Path.of(PathFinder.getRoot() + brutForcedFile);
+        int keyFinal = 0;
         try {
             if(!Files.exists(pathOut)){
                 Files.createFile(pathOut);
@@ -35,63 +36,58 @@ public class BruteForce implements Action {
                 while (reader.ready()){
                     text.append((char) reader.read());
                 }
-
                 int count = 0;
-                int stringCount = 0;
-                String textBruteForce;
-                String finish = "";
 
-                for (int x = 1; true ; x++) {
-                    for (int key = 1; key <= Strings.alphabet.length; key++) {
-                        textBruteForce = decoderText(text.toString(),key);
-                        String[] textArr = textBruteForce.split("");
-
-                        for (int i = 0; i < textArr.length; i++) {
-                            if(textArr[i].equals(",")){
-                                if(i < textArr.length - 1 && textArr[i + 1].equals(" ")){
-                                    count++;
-                                }
-                            }else if(textArr[i].equals(".")){
-                                if(i < textArr.length - 1 && textArr[i + 1].equals(" ")){
-                                    count++;
-                                }
-                            }else if(textArr[i].equals("!")){
-                                if(i < textArr.length - 1 && textArr[i + 1].equals(" ")){
-                                    count++;
-                                }
-                            }else if(textArr[i].equals("?")){
-                                if(i < textArr.length - 1 && textArr[i + 1].equals(" ")){
-                                    count++;
-                                }
-                            }else if(textArr[i].equals(" ")){
-                                count++;
+                int[] keys = new int[Strings.alphabet.length + 1];
+                for(int key = 1 ; key <= Strings.alphabet.length; key++){
+                    String textBruteForce = decoderText(text.toString(),key);
+                    String[] textArray = textBruteForce.split("");
+                    String[] textArr = new String[textArray.length/2 + 1];
+                    int countArr = 0;
+                    for(int x = 0;x < textArray.length ; x++){
+                        if(x % 2 == 0){
+                            if(x == textArray.length - 1){
+                                textArr[countArr] = textArray[x];
+                            }else{
+                                textArr[countArr] = textArray[x] + textArray[x + 1];
                             }
-                        }
-
-                        if(count >= x){
-                            stringCount++;
-                            finish = textBruteForce;
+                            countArr++;
 
                         }
-                        count = 0;
                     }
-                    if(stringCount == 1){
-                        char[] bruteForcedTextArray = finish.toCharArray();
-                        for (char c : bruteForcedTextArray) {
-                            writer.append(c);
+                    if(textArr[textArr.length - 1] == null){
+                        textArr[textArr.length - 1] = "";
+                    }
+
+                    for (String s : textArr) {
+                        switch (s) {
+                            case ", ", ". ", "? ", "; ", "! ", ": " -> count++;
                         }
-                        break;
                     }
-                    stringCount = 0;
+                    keys[key] = count;
+                    count = 0;
                 }
+
+                int max = Integer.MIN_VALUE;
+                for(int x = 0; x < keys.length;x++){
+                    if(max < keys[x]){
+                        max = keys[x];
+                        keyFinal = x;
+                    }
+                }
+                char[] bruteForcedTextArray = decoderText(text.toString(),keyFinal).toCharArray();
+                for (char c : bruteForcedTextArray) {
+                    writer.append(c);
+                }
+
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
         return new Result(ResultCode.OK,"The file " + pathIn.getFileName() +
-                " was decrypted using bruteforce " +
-                "the decrypted text is in the file " + pathOut.getFileName());
+                " was decrypted using bruteforce, key - " + keyFinal +
+                ", the decrypted text is in the file " + pathOut.getFileName());
 
     }
     private static String decoderText(String text2,int key) {

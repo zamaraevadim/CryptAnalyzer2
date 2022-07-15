@@ -1,4 +1,7 @@
 .idea/
 out/
 target/
-test.txt
+staticanalysis.txt
+encrypted.txt
+decrypted.txt
+bruteforce.txt
