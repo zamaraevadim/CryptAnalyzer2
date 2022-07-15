@@ -1,7 +1,8 @@
 package ru.javarush.cryptoanalyzer2.zamaraev.commands;
 
-import ru.javarush.cryptoanalyzer2.zamaraev.constans.Strings;
+
 import ru.javarush.cryptoanalyzer2.zamaraev.entity.Result;
+import ru.javarush.cryptoanalyzer2.zamaraev.entity.ResultCode;
 import ru.javarush.cryptoanalyzer2.zamaraev.util.PathFinder;
 
 import java.io.FileReader;
@@ -89,28 +90,30 @@ public class StaticAnalysis implements Action {
                     treeMapEncryptCharacters.put(key,pairMapEncrypt.getKey());
                 }
             }
-           // if(treeMapEncryptCharacters.containsKey(null))treeMapEncryptCharacters.remove(null);
+
+            HashMap<Character,Character> finalMap = new HashMap<>();
+            for(var c : treeMapEncryptCharacters.entrySet()){
+                if(treeMapDictCharacters.ceilingKey(c.getKey()) == null){
+                    finalMap.put(c.getValue(),treeMapDictCharacters.get(treeMapDictCharacters.floorKey(c.getKey())));
+                }else {
+                    finalMap.put(c.getValue(),treeMapDictCharacters.get(treeMapDictCharacters.ceilingKey(c.getKey())));
+                }
 
 
-            Map<Character,Character> finalMap = new HashMap<>();
-            System.out.println();
-            for(var c : treeMapDictCharacters.entrySet()) System.out.print(c + " |");
-            System.out.println();
-            System.out.println("--------------------------------------------------------------" +
-                    "-------------------------------------------------");
-            System.out.println();
-            for(var c : treeMapEncryptCharacters.entrySet()) System.out.print(c + " |");
+            }
 
-//            for(var letter : arrayOfEncryptedTextCharacters){
-//                writer.append(finalMap.get(letter));
-//
-//            }
+            for(var letter : arrayOfEncryptedTextCharacters){
+                writer.append(finalMap.get(letter));
+
+            }
 
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return null;
+        return new Result(ResultCode.OK,"The file " + pathIn.getFileName() +
+                " was decrypted using Static Analysis " +
+                "the decrypted text is in the file " + pathOut.getFileName());
     }
 }
