@@ -20,8 +20,8 @@ public class Result {
     @Override
     public String toString() {
         return "Result{" +
-                "resultCode=" + resultCode +
-                ", message='" + message + '\'' +
+                "resultCode=" + getResultCode() +
+                ", message='" + getMessage() + '\'' +
                 '}';
     }
 }
